@@ -1,6 +1,15 @@
 # Docker-compose deployer over HTTP
 This tool can be installed on a server that is controlled by [docker-compose](https://docs.docker.com/compose/) for tis deployments. After doing so, a webhook becomes available on `POST serverdomain:12045/deploy` to perform a deploy. This enables deployments via CI without providing SSH access.
 
+# Service targeting
+It is possible to target wanted services with the "services" key inside the post json body.
+With a whitespace seperated list, the requester can define the services that needs to be deployed.
+Only these services will be removed, updated and started.
+
+# Pruning
+After each deploy request, server will execute a prune command to remove old images.
+
+
 ## Setup
  1. Navigate to a desired folder for your deployment setup.
  2. Add a `docker-compose.yml` file and copy the contents from [this repo's file](https://github.com/gleerman/http-dockercompose-deploy/blob/master/docker-compose.yml) into it.

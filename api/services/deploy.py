@@ -41,6 +41,28 @@ class DeployService:
     def getUpCommand(self):
         cmd = self.getBaseCommand() + " up -d "+ self.services
         return cmd
+
+
+    def getDownCommand(self):
+        cmd = self.getBaseCommand() + " down"
+        return cmd
+
+    def getStopTargetedServicesCommand(self,services):
+        cmd = self.getBaseCommand() + " rm -f -s " + str(services)
+        return cmd
+        
+
+    def getPullCommandWithServices(self,services):
+        cmd = self.getBaseCommand() + " pull " + str(services)
+        return cmd
+        
+    def getUpWithServicesCommand(self,services):
+        cmd = self.getBaseCommand() + " up -d "+ str(services)
+        return cmd
+        
+    def getPruneCommand(self):
+        cmd = "docker system prune -a -f"
+        return cmd
         
     def runCommand(self, cmd, printCmd = True):
         if printCmd:
@@ -57,5 +79,15 @@ class DeployService:
         self.runCommand(self.getDownCommand())
         self.runCommand(self.getPullCommand())
         self.runCommand(self.getUpCommand())
+        self.runCommand(self.getPruneCommand())
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+    def performSelectedDeploy(self,services):
+        print("----- DEPLOYING ONLY CERTAIN SERVICES -----", file=sys.stderr)
+        self.runCommand(self.getStopTargetedServicesCommand(services))
+        self.runCommand(self.getPullCommandWithServices(services))
+        self.runCommand(self.getUpWithServicesCommand(services))
+        self.runCommand(self.getPruneCommand())
         sys.stdout.flush()
         sys.stderr.flush()

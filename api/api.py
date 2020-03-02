@@ -15,7 +15,7 @@ deployService = False
 # ------------------- The endpoint ---------------------------------------------
 @app.route('/deploy', methods=['POST'])
 def deploy():
-    
+
     auth_header = request.headers.get('Authorization')
     if not tokenService.isValidHeader(auth_header):
         responseObject = {
@@ -23,11 +23,20 @@ def deploy():
             'message': 'Invalid token.'
         }
         return make_response(jsonify(responseObject)), 401
-        
+   
+    request_data = request.get_json()
+
+ 
     try:
-        deployService.performDeploy()
+        if request.is_json and "services" in request_data:
+            print("Following services will be restarted: " +   str(request.get_json()) , file=sys.stdout)
+            deployService.performSelectedDeploy(request_data["services"])
+        else:
+            print("All services will be restarted.", file=sys.stdout)
+            deployService.performDeploy()
+        sys.stdout.flush()
     except Exception as e: 
-        print(e, sys.stderr)
+        print(e,  file=sys.stderr)
         sys.stderr.flush()
         responseObject = {
             'status': 'fail',

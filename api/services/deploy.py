@@ -42,6 +42,10 @@ class DeployService:
     def getUpCommand(self):
         cmd = self.getBaseCommand() + " up -d "+ self.services
         return cmd
+
+    def getPruneCommand(self):
+        cmd = 'docker system prune a -f'
+        return cmd
         
     def runCommand(self, cmd, printCmd = True):
         if printCmd:
@@ -68,6 +72,7 @@ class DeployService:
             self.loginToRegistry()
             
         self.runCommand(self.getDownCommand())
+        self.runCommand(self.getPruneCommand())
         self.runCommand(self.getPullCommand())
         self.runCommand(self.getUpCommand())
         sys.stdout.flush()
